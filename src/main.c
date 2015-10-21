@@ -13,6 +13,7 @@ int main(){
 }
 
 int nvic_setup() {
+	
 	return 0;
 }
 
