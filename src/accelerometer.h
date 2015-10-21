@@ -1,4 +1,7 @@
 // accelerometer.h - gets angle from acceleromter
+
+#ifndef __INCLUDE_ACELEROMTER_H__
+#define __INCLUDE_ACELEROMTER_H__
 // TODO: allow use to use multiple accelerometers with same API
 
 /*!
@@ -23,3 +26,4 @@ int accelerometer_setup(ACCELEROMETER which);
 	@return 0 on success, else negative
  */
 int get_angle(int* angle);
+#endif // __INCLUDE_ACELEROMTER_H__

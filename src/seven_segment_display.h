@@ -1,5 +1,8 @@
 // seven_segment_display.h - displays numbers
 
+#ifndef __INCLUDE_SEVEN_SEGMENT_H__
+#define __INCLUDE_SEVEN_SEGMENT_H__
+
 /*!
 	Makes system calls for setting up GPIO for 7 segment display
 	
@@ -14,3 +17,5 @@ int seven_segment_setup(void);
 	@return 0 on success, else negative
  */
 int display(int to_display);
+
+#endif // __INCLUDE_SEVEN_SEGMENT_H__
