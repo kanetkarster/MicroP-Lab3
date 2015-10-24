@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "stm32f4xx.h"                  // Device header
 #include "stm32f4xx_conf.h"
-
-int nvic_setup();
+#include "keypad.h"
+int nvic_setup(void);
 
 int main(){
-	
+	SystemInit();
+	keypad_setup();
 	while(1){
 	}
 	
