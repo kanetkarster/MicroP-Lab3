@@ -5,7 +5,7 @@
 #include "seven_segment_display.h"
 
 int main(){
-	// SystemInit();
+	SystemInit();
 	seven_segment_setup();
 	while(1){
 	

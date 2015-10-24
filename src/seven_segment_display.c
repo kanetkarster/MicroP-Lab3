@@ -29,6 +29,7 @@ typedef enum {
 	DIGIT_FIRST = GPIO_Pin_0,  // 1
 	DIGIT_SECOND = GPIO_Pin_1, // 2
 	DIGIT_THIRD = GPIO_Pin_2,  // 6
+	ALL_DIGITS = DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD,
 } DIGIT;
 
 /*!
@@ -43,8 +44,7 @@ typedef enum {
 	SEGMENT_F = GPIO_Pin_12, // 11
 	SEGMENT_G = GPIO_Pin_13, // 15
 	SEGMENT_H = GPIO_Pin_14,	// Period
-	ALL_SEGS = SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G	// excludes period
-
+	ALL_SEGS = SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G
 } SEGMENT;
 
 
@@ -61,6 +61,12 @@ uint16_t DISPLAY[10] =
 		ALL_SEGS,
 		ALL_SEGS | SEGMENT_E
 	};
+	
+uint16_t INDEX[3] = {
+	DIGIT_FIRST,
+	DIGIT_SECOND,
+	DIGIT_THIRD
+};
 /*!
 	Makes system calls for setting up GPIO for 7 segment display
 	
@@ -71,7 +77,6 @@ int seven_segment_setup() {
 	/* Enable Timer */
 	// Give power to Timer 3
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-	RCC_AHB1PeriphClockCmd (RCC_AHB1Periph_GPIOB, ENABLE);
 	
 	TIM_TimeBaseInitTypeDef tim_init_s;
 	// set Prescaler so the transitions are smooth
@@ -88,9 +93,9 @@ int seven_segment_setup() {
 	
 	/* Enable IO Pins */
 	GPIO_InitTypeDef gpio_init_s;
-	GPIO_StructInit(&gpio_init_s);
-	// Power to GPIOD
-	RCC_AHB1PeriphClockCmd (RCC_AHB1Periph_GPIOD, ENABLE); 
+	//GPIO_StructInit(&gpio_init_s);
+	// Power to GPIOB
+	RCC_AHB1PeriphClockCmd (RCC_AHB1Periph_GPIOB, ENABLE);
 	
 	/* set on board LEDs */
 	gpio_init_s.GPIO_Mode = GPIO_Mode_OUT; 			// Set as Output
@@ -98,12 +103,13 @@ int seven_segment_setup() {
 	gpio_init_s.GPIO_OType = GPIO_OType_PP;			// Operating output type (push-pull) for selected pins
 	gpio_init_s.GPIO_PuPd = GPIO_PuPd_NOPULL; 	// If there is no input, don't pull.
 	
-	gpio_init_s.GPIO_Pin = DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD | /* Pins to Select Digits */
-												SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | /* Pins to Select Segments */
+	gpio_init_s.GPIO_Pin = DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD |
+												SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D |
 												SEGMENT_E | SEGMENT_F | SEGMENT_G | SEGMENT_H;
-	GPIO_Init(IO_SEVEN_SEGMENT, &gpio_init_s);
-	GPIO_SetBits(IO_SEVEN_SEGMENT, DIGIT_FIRST | DISPLAY[4]);
-	
+	GPIO_Init(GPIOB, &gpio_init_s);
+	GPIO_SetBits(GPIOB, ALL_SEGS);
+	GPIO_SetBits(GPIOB, DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD);
+	//GPIO_WriteBit(GPIOB, GPIO_Pin_0 | GPIO_Pin_13, Bit_SET);
 	/* add TIM3_IRQn to the interupts */
 	// TODO: maybe we should use a central nvic declaration?
 	NVIC_InitTypeDef  nvic_init_s;
@@ -121,7 +127,10 @@ void TIM3_IRQHandler() {
 	TIM_ClearFlag(TIM3, TIM_IT_Update);
 	
 	// flash led 13
-	count = (count + 1) % 10;
+	GPIO_SetBits(GPIOB, ALL_DIGITS);
+	GPIO_ResetBits(GPIOB, INDEX[count]);
+	count = (count + 1) % 3;
+	//GPIO_WriteBit(GPIOB, GPIO_Pin_0 | GPIO_Pin_13, Bit_SET);-
 	//GPIO_SetBits(IO_SEVEN_SEGMENT, DIGIT_FIRST | DISPLAY[count]);
 //	if (count == 9)
 //	{
