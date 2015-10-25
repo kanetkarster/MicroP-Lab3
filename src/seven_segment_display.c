@@ -26,7 +26,7 @@ typedef enum {
 	SEGMENT_E = GPIO_Pin_11, // 5
 	SEGMENT_F = GPIO_Pin_12, // 11
 	SEGMENT_G = GPIO_Pin_13, // 15
-	SEGMENT_DEC = GPIO_Pin_14,	// Period
+	SEGMENT_DEC = GPIO_Pin_14,	// 7
 	ALL_SEGS = SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G
 } SEGMENT;
 
@@ -48,20 +48,25 @@ typedef enum {
 	NUM_OFF = 0,
 } NUMBER;
 
-NUMBER toSegments[10] = 
-	{
-		NUM_ZERO,
-    NUM_ONE,
-    NUM_TWO,
-		NUM_THREE,
-    NUM_FOUR,
-		NUM_FIVE,
-		NUM_SIX,
-		NUM_SEVEN,
-		NUM_EIGHT,
-		NUM_NINE
-	};
-	
+/*!
+	Convert from an integer to its representation in segments
+ */
+NUMBER toSegments[10] = {
+	NUM_ZERO,
+	NUM_ONE,
+	NUM_TWO,
+	NUM_THREE,
+	NUM_FOUR,
+	NUM_FIVE,
+	NUM_SIX,
+	NUM_SEVEN,
+	NUM_EIGHT,
+	NUM_NINE
+};
+
+/*!
+	Allows a modulo 3 counter to choose a digit
+ */
 DIGIT INDEX[3] = {
 	DIGIT_FIRST,
 	DIGIT_SECOND,
@@ -82,11 +87,11 @@ int seven_segment_setup() {
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
 	
 	TIM_TimeBaseInitTypeDef tim_init_s;
-	// set Prescaler so the transitions are smooth
+	// choose a combination of Prescaler and Period for smooth transitions
 	tim_init_s.TIM_Prescaler = 400;
+	tim_init_s.TIM_Period = 500;
 	tim_init_s.TIM_CounterMode =  TIM_CounterMode_Up;
 	tim_init_s.TIM_ClockDivision = TIM_CKD_DIV1;
-	tim_init_s.TIM_Period = 500;
 	tim_init_s.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM3, &tim_init_s);
 	// enable the clock
@@ -95,52 +100,48 @@ int seven_segment_setup() {
 	TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
 	
 	/* Enable IO Pins */
-	GPIO_InitTypeDef gpio_init_s;
-	//GPIO_StructInit(&gpio_init_s);
-	// Power to GPIOB
+	// Give power to IO_SEVEN_SEGMENT
 	RCC_AHB1PeriphClockCmd (RCC_AHB1Periph_GPIOB, ENABLE);
-	
-	/* set on board LEDs */
+		
+	GPIO_InitTypeDef gpio_init_s;
 	gpio_init_s.GPIO_Mode = GPIO_Mode_OUT; 			// Set as Output
 	gpio_init_s.GPIO_Speed = GPIO_Speed_100MHz; // Don't limit slew rate, allow values to change as fast as they are set
 	gpio_init_s.GPIO_OType = GPIO_OType_PP;			// Operating output type (push-pull) for selected pins
 	gpio_init_s.GPIO_PuPd = GPIO_PuPd_NOPULL; 	// If there is no input, don't pull.
 	
-	gpio_init_s.GPIO_Pin = DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD |
-												SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D |
-												SEGMENT_E | SEGMENT_F | SEGMENT_G | SEGMENT_DEC;
-	GPIO_Init(GPIOB, &gpio_init_s);
-	GPIO_SetBits(GPIOB, DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD);
-	//GPIO_WriteBit(GPIOB, GPIO_Pin_0 | GPIO_Pin_13, Bit_SET);
-	/* add TIM3_IRQn to the interupts */
-	// TODO: maybe we should use a central nvic declaration?
+	// Turn on Pins for outputs to All Segments and All Digits
+	gpio_init_s.GPIO_Pin = ALL_DIGITS | ALL_SEGS | SEGMENT_DEC;
+	GPIO_Init(IO_SEVEN_SEGMENT, &gpio_init_s);
+	
+	// start with all pins off
+	GPIO_SetBits(IO_SEVEN_SEGMENT, DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD);
+	GPIO_ResetBits(IO_SEVEN_SEGMENT, ALL_SEGS | SEGMENT_DEC);
+	
+	/* Enable Timer 3 Interrupts */
 	NVIC_InitTypeDef  nvic_init_s;
 	nvic_init_s.NVIC_IRQChannel = TIM3_IRQn;
 	nvic_init_s.NVIC_IRQChannelCmd = ENABLE;
 	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 1;
 	nvic_init_s.NVIC_IRQChannelSubPriority = 1;
 	
-	//num[0] = toSegments[4];
-	//num[1] = toSegments[2];
-	//num[2] = toSegments[0];
-	
 	NVIC_Init(&nvic_init_s);
 	
 	return 0;
 }
-int count = 0;
+
+unsigned int count = 0; //! alternate between digits
 void TIM3_IRQHandler() {
 	TIM_ClearFlag(TIM3, TIM_IT_Update);
 	
+	int index_tmp = count++ % 3;
 	// Select a Digit
-	GPIO_SetBits(GPIOB, ALL_DIGITS);
-	GPIO_ResetBits(GPIOB, INDEX[count % 3]);
+	GPIO_SetBits(IO_SEVEN_SEGMENT, ALL_DIGITS);
+	GPIO_ResetBits(IO_SEVEN_SEGMENT, INDEX[index_tmp]);
 	
 	// Display a Number
-	GPIO_ResetBits(GPIOB, ALL_SEGS | SEGMENT_DEC);
-	GPIO_SetBits(GPIOB, num[count % 3]);
+	GPIO_ResetBits(IO_SEVEN_SEGMENT, ALL_SEGS | SEGMENT_DEC);
+	GPIO_SetBits(IO_SEVEN_SEGMENT, num[index_tmp]);
 	
-	count++;
 }
 
 /*!
@@ -150,14 +151,20 @@ void TIM3_IRQHandler() {
 	@return 0 on success, else negative
  */
 int display(float to_display) {
+	// turn all segments off
 	num[0] = NUM_OFF;
 	num[1] = NUM_OFF;
 	num[2] = NUM_OFF;
+	
+	// error if too small or too large
 	if (to_display < 0 || to_display > 180) {
 		return -1;
 	}
+	
+	// convert to_display into an integer for easier operations
 	int tmp;
-	// set decimal and tmp
+	
+	// add decimal point if needed and find digits
 	if (to_display < 10) {
 		num[0] |= SEGMENT_DEC;
 		tmp = (int) (100 * to_display);
@@ -167,9 +174,10 @@ int display(float to_display) {
 	} else {
 		tmp = (int) to_display;
 	}
-	printf("displaying: %d", tmp);
 	// set all digits
+	// get last digit
 	num[2] |= toSegments[tmp % 10];
+	// shift over by a decimal place
 	tmp = tmp/10;
 	
 	num[1] |= toSegments[tmp % 10];
@@ -177,6 +185,7 @@ int display(float to_display) {
 	
 	num[0] |= toSegments[tmp % 10];
 	tmp = tmp/10;
+	
 	return 0;
 }
 

@@ -6,7 +6,7 @@
 
 int main(){
 	SystemInit();
-	display(6.2499);
+	display(6.23);
 	seven_segment_setup();
 	while(1){
 	
