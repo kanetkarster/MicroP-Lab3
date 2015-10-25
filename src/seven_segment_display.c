@@ -2,24 +2,7 @@
 
 #include "stm32f4xx.h"                  // Device header
 #include "stm32f4xx_conf.h"
-
-/*!
-	Digits which can be dispalyed
-	TODO: set equal to bit vector contianing which segments to show
- */
-typedef enum {
-	ZERO,
-	ONE,
-	TWO,
-	THREE,
-	FOUR,
-	FIVE,
-	SIX,
-	SEVEN,
-	EIGHT,
-	NINE
-} NUMBER;
-
+		
 #define IO_SEVEN_SEGMENT GPIOB
 
 /*!
@@ -47,26 +30,45 @@ typedef enum {
 	ALL_SEGS = SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G
 } SEGMENT;
 
+/*!
+	Digits which can be dispalyed
+	TODO: set equal to bit vector contianing which segments to show
+ */
+typedef enum {
+	NUM_ZERO = ALL_SEGS ^ SEGMENT_G,
+	NUM_ONE = SEGMENT_B | SEGMENT_C,
+	NUM_TWO = ALL_SEGS ^ SEGMENT_C ^ SEGMENT_F,
+	NUM_THREE = ALL_SEGS ^ SEGMENT_E ^ SEGMENT_F,
+	NUM_FOUR = SEGMENT_B | SEGMENT_C | SEGMENT_G |SEGMENT_F,
+	NUM_FIVE= ALL_SEGS ^ SEGMENT_B ^ SEGMENT_E,
+	NUM_SIX = ALL_SEGS ^ SEGMENT_B,
+	NUM_SEVEN = SEGMENT_A | SEGMENT_B | SEGMENT_C,
+	NUM_EIGHT = ALL_SEGS,
+	NUM_NINE = ALL_SEGS ^ SEGMENT_E
+} NUMBER;
 
-uint16_t DISPLAY[10] = 
+NUMBER toSegments[10] = 
 	{
-		ALL_SEGS ^ SEGMENT_G, // zero
-		SEGMENT_B | SEGMENT_C,
-		ALL_SEGS ^ SEGMENT_C ^ SEGMENT_F,
-		ALL_SEGS ^ SEGMENT_E ^ SEGMENT_F,
-		SEGMENT_B | SEGMENT_C | SEGMENT_G |SEGMENT_F,
-		ALL_SEGS ^ SEGMENT_B ^ SEGMENT_E,
-		ALL_SEGS ^ SEGMENT_B,
-		SEGMENT_A | SEGMENT_B | SEGMENT_C,
-		ALL_SEGS,
-		ALL_SEGS | SEGMENT_E
+		NUM_ZERO,
+    NUM_ONE,
+    NUM_TWO,
+		NUM_THREE,
+    NUM_FOUR,
+		NUM_FIVE,
+		NUM_SIX,
+		NUM_SEVEN,
+		NUM_EIGHT,
+		NUM_NINE
 	};
 	
-uint16_t INDEX[3] = {
+DIGIT INDEX[3] = {
 	DIGIT_FIRST,
 	DIGIT_SECOND,
-	DIGIT_THIRD
+	DIGIT_THIRD,
 };
+
+NUMBER num[3];
+
 /*!
 	Makes system calls for setting up GPIO for 7 segment display
 	
@@ -80,7 +82,7 @@ int seven_segment_setup() {
 	
 	TIM_TimeBaseInitTypeDef tim_init_s;
 	// set Prescaler so the transitions are smooth
-	tim_init_s.TIM_Prescaler = 40*1000;
+	tim_init_s.TIM_Prescaler = 400;
 	tim_init_s.TIM_CounterMode =  TIM_CounterMode_Up;
 	tim_init_s.TIM_ClockDivision = TIM_CKD_DIV1;
 	tim_init_s.TIM_Period = 500;
@@ -107,7 +109,6 @@ int seven_segment_setup() {
 												SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D |
 												SEGMENT_E | SEGMENT_F | SEGMENT_G | SEGMENT_H;
 	GPIO_Init(GPIOB, &gpio_init_s);
-	GPIO_SetBits(GPIOB, ALL_SEGS);
 	GPIO_SetBits(GPIOB, DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD);
 	//GPIO_WriteBit(GPIOB, GPIO_Pin_0 | GPIO_Pin_13, Bit_SET);
 	/* add TIM3_IRQn to the interupts */
@@ -115,8 +116,12 @@ int seven_segment_setup() {
 	NVIC_InitTypeDef  nvic_init_s;
 	nvic_init_s.NVIC_IRQChannel = TIM3_IRQn;
 	nvic_init_s.NVIC_IRQChannelCmd = ENABLE;
-	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 0;
+	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 1;
 	nvic_init_s.NVIC_IRQChannelSubPriority = 1;
+	
+	num[0] = toSegments[4];
+	num[1] = toSegments[2];
+	num[2] = toSegments[0];
 	
 	NVIC_Init(&nvic_init_s);
 	
@@ -126,16 +131,15 @@ int count = 0;
 void TIM3_IRQHandler() {
 	TIM_ClearFlag(TIM3, TIM_IT_Update);
 	
-	// flash led 13
+	// Select a Digit
 	GPIO_SetBits(GPIOB, ALL_DIGITS);
-	GPIO_ResetBits(GPIOB, INDEX[count]);
-	count = (count + 1) % 3;
-	//GPIO_WriteBit(GPIOB, GPIO_Pin_0 | GPIO_Pin_13, Bit_SET);-
-	//GPIO_SetBits(IO_SEVEN_SEGMENT, DIGIT_FIRST | DISPLAY[count]);
-//	if (count == 9)
-//	{
-//			GPIO_ToggleBits(GPIOD, GPIO_Pin_13);
-//	}
+	GPIO_ResetBits(GPIOB, INDEX[count % 3]);
+	
+	// Display a Number
+	GPIO_ResetBits(GPIOB, ALL_SEGS);
+	GPIO_SetBits(GPIOB, num[count % 3]);
+	
+	count++;
 }
 
 /*!
