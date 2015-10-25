@@ -16,6 +16,6 @@ int seven_segment_setup(void);
 	
 	@return 0 on success, else negative
  */
-int display(int to_display);
+int display(float to_display);
 
 #endif // __INCLUDE_SEVEN_SEGMENT_H__

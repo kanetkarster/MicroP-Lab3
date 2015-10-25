@@ -26,7 +26,7 @@ typedef enum {
 	SEGMENT_E = GPIO_Pin_11, // 5
 	SEGMENT_F = GPIO_Pin_12, // 11
 	SEGMENT_G = GPIO_Pin_13, // 15
-	SEGMENT_H = GPIO_Pin_14,	// Period
+	SEGMENT_DEC = GPIO_Pin_14,	// Period
 	ALL_SEGS = SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D | SEGMENT_E | SEGMENT_F | SEGMENT_G
 } SEGMENT;
 
@@ -44,7 +44,8 @@ typedef enum {
 	NUM_SIX = ALL_SEGS ^ SEGMENT_B,
 	NUM_SEVEN = SEGMENT_A | SEGMENT_B | SEGMENT_C,
 	NUM_EIGHT = ALL_SEGS,
-	NUM_NINE = ALL_SEGS ^ SEGMENT_E
+	NUM_NINE = ALL_SEGS ^ SEGMENT_E,
+	NUM_OFF = 0,
 } NUMBER;
 
 NUMBER toSegments[10] = 
@@ -107,7 +108,7 @@ int seven_segment_setup() {
 	
 	gpio_init_s.GPIO_Pin = DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD |
 												SEGMENT_A | SEGMENT_B | SEGMENT_C | SEGMENT_D |
-												SEGMENT_E | SEGMENT_F | SEGMENT_G | SEGMENT_H;
+												SEGMENT_E | SEGMENT_F | SEGMENT_G | SEGMENT_DEC;
 	GPIO_Init(GPIOB, &gpio_init_s);
 	GPIO_SetBits(GPIOB, DIGIT_FIRST | DIGIT_SECOND | DIGIT_THIRD);
 	//GPIO_WriteBit(GPIOB, GPIO_Pin_0 | GPIO_Pin_13, Bit_SET);
@@ -119,9 +120,9 @@ int seven_segment_setup() {
 	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 1;
 	nvic_init_s.NVIC_IRQChannelSubPriority = 1;
 	
-	num[0] = toSegments[4];
-	num[1] = toSegments[2];
-	num[2] = toSegments[0];
+	//num[0] = toSegments[4];
+	//num[1] = toSegments[2];
+	//num[2] = toSegments[0];
 	
 	NVIC_Init(&nvic_init_s);
 	
@@ -136,7 +137,7 @@ void TIM3_IRQHandler() {
 	GPIO_ResetBits(GPIOB, INDEX[count % 3]);
 	
 	// Display a Number
-	GPIO_ResetBits(GPIOB, ALL_SEGS);
+	GPIO_ResetBits(GPIOB, ALL_SEGS | SEGMENT_DEC);
 	GPIO_SetBits(GPIOB, num[count % 3]);
 	
 	count++;
@@ -148,7 +149,34 @@ void TIM3_IRQHandler() {
 	
 	@return 0 on success, else negative
  */
-int display(int to_display) {
+int display(float to_display) {
+	num[0] = NUM_OFF;
+	num[1] = NUM_OFF;
+	num[2] = NUM_OFF;
+	if (to_display < 0 || to_display > 180) {
+		return -1;
+	}
+	int tmp;
+	// set decimal and tmp
+	if (to_display < 10) {
+		num[0] |= SEGMENT_DEC;
+		tmp = (int) (100 * to_display);
+	} else if (to_display < 100) {
+		num[1] |= SEGMENT_DEC;
+		tmp = (int) (10 * to_display);
+	} else {
+		tmp = (int) to_display;
+	}
+	printf("displaying: %d", tmp);
+	// set all digits
+	num[2] |= toSegments[tmp % 10];
+	tmp = tmp/10;
+	
+	num[1] |= toSegments[tmp % 10];
+	tmp = tmp/10;
+	
+	num[0] |= toSegments[tmp % 10];
+	tmp = tmp/10;
 	return 0;
 }
 
