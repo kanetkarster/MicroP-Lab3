@@ -1,14 +1,16 @@
 // led_dispaly.h - displays high, low, success or loss
-
+#ifndef __INCLUDE_LED_DISPLAY_
+#define __INCLUDE_LED_DISPLAY_
 /*!
 	Contains possible results from a user guess
 	Each index coresponds to a particular LED
  */
 typedef enum {
-	TOO_LOW,
-	TOO_HIGH,
-	WIN,
-	LOSS
+	GUESS_TOO_LOW = GPIO_Pin_12,
+	GUESS_TOO_HIGH = GPIO_Pin_13,
+	GUESS_WIN = GPIO_Pin_14,
+	GUESS_LOSS = GPIO_Pin_15,
+	GUESS_ALL = GUESS_TOO_LOW | GUESS_TOO_HIGH | GUESS_WIN | GUESS_LOSS
 } GUESS_STATUS;
 
 /*!
@@ -22,3 +24,5 @@ int led_setup();
 	Shows LED related to status of user input
  */
 void led_display(GUESS_STATUS guess);
+
+#endif // __INCLUDE_LED_DISPLAY_
