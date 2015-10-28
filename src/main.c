@@ -3,19 +3,18 @@
 #include "stm32f4xx_conf.h"
 
 #include "led_display.h"
-
-int nvic_setup();
+#include "seven_segment_display.h"
 
 int main(){
+	SystemInit();
 	led_setup();
+	seven_segment_setup();
 	led_display(GUESS_TOO_LOW);
+	display(6.23);
+	
 	while(1){
+	
 	}
 	
 	return 0;
 }
-
-int nvic_setup() {
-	return 0;
-}
-
