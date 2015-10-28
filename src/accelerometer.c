@@ -86,7 +86,7 @@ void EXTI0_IRQHandler(void)
 		//printf("%f\n", angle);
 		//float angle = (xyz[2] - 26) / (Z_POS_ZVG - Z_NEG_ZVG) * 180 + 90;
 		add_value(&angle_avg, angle * 180.0f / 3.14f + 90);
-		printf("%f\n", get_value(&angle_avg));
+		//printf("%f\n", get_value(&angle_avg));
 		EXTI_ClearITPendingBit(LIS3DSH_SPI_INT1_EXTI_LINE);
 	}
 }
@@ -97,7 +97,7 @@ void EXTI0_IRQHandler(void)
 	@param *angle the angle measured by the accelerometer
 	@return 0 on success, else negative
  */
-int get_angle(int* angle) {
-	*angle = (int) get_value(&angle_avg);
+int get_angle(float* angle) {
+	*angle = get_value(&angle_avg);
 	return 0;
 }

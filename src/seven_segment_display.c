@@ -5,6 +5,9 @@
 		
 #define IO_SEVEN_SEGMENT GPIOB
 
+
+unsigned int wait = 0;
+
 /*!
 	Which pin (on IO_SEVEN_SEGMENT) is used for each digit.
  */
@@ -121,8 +124,8 @@ int seven_segment_setup() {
 	NVIC_InitTypeDef  nvic_init_s;
 	nvic_init_s.NVIC_IRQChannel = TIM3_IRQn;
 	nvic_init_s.NVIC_IRQChannelCmd = ENABLE;
-	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 1;
-	nvic_init_s.NVIC_IRQChannelSubPriority = 1;
+	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 0x01;
+	nvic_init_s.NVIC_IRQChannelSubPriority = 0x01;
 	
 	NVIC_Init(&nvic_init_s);
 	
@@ -141,7 +144,7 @@ void TIM3_IRQHandler() {
 	// Display a Number
 	GPIO_ResetBits(IO_SEVEN_SEGMENT, ALL_SEGS | SEGMENT_DEC);
 	GPIO_SetBits(IO_SEVEN_SEGMENT, num[index_tmp]);
-	
+	wait++;
 }
 
 /*!

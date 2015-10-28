@@ -3,6 +3,8 @@
 #ifndef __INCLUDE_SEVEN_SEGMENT_H__
 #define __INCLUDE_SEVEN_SEGMENT_H__
 
+extern unsigned int wait;
+
 /*!
 	Makes system calls for setting up GPIO for 7 segment display
 	

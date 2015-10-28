@@ -2,7 +2,9 @@
 #include "stm32f4xx.h"                  // Device header
 #include "stm32f4xx_conf.h"
 #include <stdio.h>
+#include "seven_segment_display.h"
 
+#define debounce_time 25 //1000*5ns = 5ms ~~
 const char BUTTON_MAP[12] = "147*2580369#";
 
 int keypad_gpio_reset() {
@@ -43,10 +45,10 @@ int keypad_NVIC_config(){
 }	
 int keypad_EXTI_config(){
 	
-	EXTI_InitTypeDef exti_init_col0;	//C5
-	EXTI_InitTypeDef exti_init_col1;	//C6
-	EXTI_InitTypeDef exti_init_col2;	//C8
-	EXTI_InitTypeDef exti_init_col3;	//C9
+	EXTI_InitTypeDef exti_init_row0;	//C5
+	EXTI_InitTypeDef exti_init_row1;	//C6
+	EXTI_InitTypeDef exti_init_row2;	//C8
+	EXTI_InitTypeDef exti_init_row3;	//C9
 	
 	//let the system know that C5,C6, C8, C9 are being used
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource5);
@@ -55,34 +57,34 @@ int keypad_EXTI_config(){
 	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOC, EXTI_PinSource9);
 	
 	//set the line connections
-	exti_init_col0.EXTI_Line = EXTI_Line5;
-	exti_init_col1.EXTI_Line = EXTI_Line6;
-	exti_init_col2.EXTI_Line = EXTI_Line8;
-	exti_init_col3.EXTI_Line = EXTI_Line9;
+	exti_init_row0.EXTI_Line = EXTI_Line5;
+	exti_init_row1.EXTI_Line = EXTI_Line6;
+	exti_init_row2.EXTI_Line = EXTI_Line8;
+	exti_init_row3.EXTI_Line = EXTI_Line9;
 
 	//enable interrupts
-	exti_init_col0.EXTI_LineCmd = ENABLE;
-	exti_init_col1.EXTI_LineCmd = ENABLE;
-	exti_init_col2.EXTI_LineCmd = ENABLE;
-	exti_init_col3.EXTI_LineCmd = ENABLE;
+	exti_init_row0.EXTI_LineCmd = ENABLE;
+	exti_init_row1.EXTI_LineCmd = ENABLE;
+	exti_init_row2.EXTI_LineCmd = ENABLE;
+	exti_init_row3.EXTI_LineCmd = ENABLE;
 	
 	//interrupt mode
-	exti_init_col0.EXTI_Mode = EXTI_Mode_Interrupt;
-	exti_init_col1.EXTI_Mode = EXTI_Mode_Interrupt;
-	exti_init_col2.EXTI_Mode = EXTI_Mode_Interrupt;
-	exti_init_col3.EXTI_Mode = EXTI_Mode_Interrupt;
+	exti_init_row0.EXTI_Mode = EXTI_Mode_Interrupt;
+	exti_init_row1.EXTI_Mode = EXTI_Mode_Interrupt;
+	exti_init_row2.EXTI_Mode = EXTI_Mode_Interrupt;
+	exti_init_row3.EXTI_Mode = EXTI_Mode_Interrupt;
 	
 	//Triggers on Rising and Falling Edge
-	exti_init_col0.EXTI_Trigger = EXTI_Trigger_Falling;
-	exti_init_col1.EXTI_Trigger = EXTI_Trigger_Falling;
-	exti_init_col2.EXTI_Trigger = EXTI_Trigger_Falling;
-	exti_init_col3.EXTI_Trigger = EXTI_Trigger_Falling;
+	exti_init_row0.EXTI_Trigger = EXTI_Trigger_Falling;
+	exti_init_row1.EXTI_Trigger = EXTI_Trigger_Falling;
+	exti_init_row2.EXTI_Trigger = EXTI_Trigger_Falling;
+	exti_init_row3.EXTI_Trigger = EXTI_Trigger_Falling;
 	
 	//Add to EXTI
-	EXTI_Init(&exti_init_col0);
-	EXTI_Init(&exti_init_col1);
-	EXTI_Init(&exti_init_col2);
-	EXTI_Init(&exti_init_col3);
+	EXTI_Init(&exti_init_row0);
+	EXTI_Init(&exti_init_row1);
+	EXTI_Init(&exti_init_row2);
+	EXTI_Init(&exti_init_row3);
 	
 		return 0;
 
@@ -152,6 +154,13 @@ int keypad_setup() {
 void EXTI9_5_IRQHandler(void){
 	int col_select;
 	int  row_select;
+	
+	static unsigned int check = 0;
+	
+	if (wait < (check + debounce_time)) {
+		return;
+	}
+	check = wait;
 	
 	if(EXTI_GetITStatus(EXTI_Line9) != RESET) {
 		EXTI_ClearITPendingBit(EXTI_Line9);

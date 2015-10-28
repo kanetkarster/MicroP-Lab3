@@ -3,6 +3,8 @@
 #ifndef __INCLUDE_KEYPAD_H__
 #define __INCLUDE_KEYPAD_H__
 
+
+extern int keypadready;
 /*!
 	Makes system calls for setting up GPIO for keypad
 	

@@ -8,15 +8,18 @@
 
 
 int main(){
-	
-	led_setup();
-	seven_segment_setup();
 	accelerometer_setup(ACCELEROMETER_LIS3DSH);
 	keypad_setup();
+	led_setup();
+	seven_segment_setup();
+	
 	led_display(GUESS_TOO_HIGH);
 	display(32.8);
+	float f;
 	while(1){
-		
+		while(wait%100 != 0);
+		get_angle(&f);
+		display(f);
 	}
 	
 	return 0;
