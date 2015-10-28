@@ -10,6 +10,10 @@
  */
 int keypad_setup(void);
 
+
+void check_press(void);
+
+
 /*!
 	Get's a guess from user
 	@param *guess what the user guessed

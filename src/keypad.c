@@ -10,21 +10,21 @@ int keypad_gpio_reset() {
 	GPIO_InitTypeDef gpio_init_cols;
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	//set rows pins as output
-	gpio_init_rows.GPIO_Mode = GPIO_Mode_OUT;
-	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
-	gpio_init_rows.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
-	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_DOWN;
-	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOD, &gpio_init_rows);
-	
-	//set cols pins as input
-	gpio_init_cols.GPIO_Mode = GPIO_Mode_IN;
+	//set cols pins as output
+	gpio_init_cols.GPIO_Mode = GPIO_Mode_OUT;
 	gpio_init_cols.GPIO_OType = GPIO_OType_PP;
-	gpio_init_cols.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
-	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_UP;
+	gpio_init_cols.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
+	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_DOWN;
 	gpio_init_cols.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOD, &gpio_init_cols);
+	GPIO_Init(GPIOC, &gpio_init_cols);
+	
+	//set rows pins as input
+	gpio_init_rows.GPIO_Mode = GPIO_Mode_IN;
+	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
+	gpio_init_rows.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
+	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_UP;
+	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_Init(GPIOC, &gpio_init_rows);
 	
 		return 0;
 	
@@ -92,21 +92,21 @@ int keypad_switch(){
 	GPIO_InitTypeDef gpio_init_cols;
 
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-	//set rows pins as input
-	gpio_init_rows.GPIO_Mode = GPIO_Mode_IN;
-	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
-	gpio_init_rows.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
-	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_UP;
-	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOD, &gpio_init_rows);
-	
 	//set cols pins as input
-	gpio_init_cols.GPIO_Mode = GPIO_Mode_OUT;
+	gpio_init_cols.GPIO_Mode = GPIO_Mode_IN;
 	gpio_init_cols.GPIO_OType = GPIO_OType_PP;
-	gpio_init_cols.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
-	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_DOWN;
+	gpio_init_cols.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
+	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_UP;
 	gpio_init_cols.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOD, &gpio_init_cols);
+	GPIO_Init(GPIOC, &gpio_init_cols);
+	
+	//set rows pins as output
+	gpio_init_rows.GPIO_Mode = GPIO_Mode_OUT;
+	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
+	gpio_init_rows.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
+	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_DOWN;
+	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_Init(GPIOC, &gpio_init_rows);
 	
 		return 0;
 }
@@ -116,7 +116,7 @@ int keypad_switch(){
 	@return 0 on success, else negative
  */
  //C1,C2,C4, C5,C6,C8,C9
- //Row0,Row1,Row2, Col0,Col1,Col2,Col3
+ //Col0,Col1,Col2, Row0,Row1,Row2,Row3
 int keypad_setup() {
 	//set variables
 	GPIO_InitTypeDef gpio_init_rows;
@@ -127,21 +127,21 @@ int keypad_setup() {
 	//enable clock for SYSCFG
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	
-	//set row pins as output
-	gpio_init_rows.GPIO_Mode = GPIO_Mode_OUT;
-	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
-	gpio_init_rows.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
-	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_DOWN;
-	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOD, &gpio_init_rows);
-	
-	//set cols pins as input
-	gpio_init_cols.GPIO_Mode = GPIO_Mode_IN;
+	//set cols pins as output
+	gpio_init_cols.GPIO_Mode = GPIO_Mode_OUT;
 	gpio_init_cols.GPIO_OType = GPIO_OType_PP;
-	gpio_init_cols.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
-	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_UP;
+	gpio_init_cols.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
+	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_DOWN;
 	gpio_init_cols.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_Init(GPIOD, &gpio_init_cols);
+	GPIO_Init(GPIOC, &gpio_init_cols);
+	
+	//set rows pins as input
+	gpio_init_rows.GPIO_Mode = GPIO_Mode_IN;
+	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
+	gpio_init_rows.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
+	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_UP;
+	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_Init(GPIOC, &gpio_init_rows);
 
 	keypad_EXTI_config();
 	keypad_NVIC_config();
@@ -154,28 +154,35 @@ void EXTI9_5_IRQHandler(void){
 	int  row_select;
 	
 	if(EXTI_GetITStatus(EXTI_Line9) != RESET) {
-		col_select = 3;
 		EXTI_ClearITPendingBit(EXTI_Line9);
 	}else if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
-		col_select = 2;
 		EXTI_ClearITPendingBit(EXTI_Line8);
 	}else if(EXTI_GetITStatus(EXTI_Line6) != RESET) {
-		col_select = 1;
 		EXTI_ClearITPendingBit(EXTI_Line6);
 	}else if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
-		col_select = 0;
 		EXTI_ClearITPendingBit(EXTI_Line5);
 	}else
+		return;
+	
+	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9) == 0)
+		row_select=3;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) == 0)
+		row_select=2;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6) == 0)
+		row_select=1;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == 0)
+		row_select = 0;
+	else
 		return;
 	
 	keypad_switch();
 	
 	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_1) == 0)
-		row_select = 0;
+		col_select = 0;
 	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_2) == 0)
-		row_select = 4;
+		col_select = 4;
 	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == 0)
-		row_select = 8;
+		col_select = 8;
 	else
 		return;
 	
@@ -187,7 +194,39 @@ void EXTI9_5_IRQHandler(void){
 	
 	
 	keypad_gpio_reset();
+}
 
+void check_press(void) {
+	int row_select;
+	int col_select;
+	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9) == 0)
+		row_select=3;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) == 0)
+		row_select=2;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6) == 0)
+		row_select=1;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == 0)
+		row_select = 0;
+	else
+		return;
+	
+	keypad_switch();
+	
+	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_1) == 0)
+		col_select = 0;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_2) == 0)
+		col_select = 4;
+	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == 0)
+		col_select = 8;
+	else
+		return;
+	
+	
+	unsigned int selection = col_select + row_select;
+	
+	printf("button selected: %c\n", BUTTON_MAP[selection]);
+	
+	keypad_gpio_reset();
 }
 /*!
 	Get's a guess from user
