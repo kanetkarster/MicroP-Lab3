@@ -25,5 +25,5 @@ int accelerometer_setup(ACCELEROMETER which);
 	@param *angle the angle measured by the accelerometer
 	@return 0 on success, else negative
  */
-int get_angle(int* angle);
+int get_angle(float* angle);
 #endif // __INCLUDE_ACELEROMTER_H__

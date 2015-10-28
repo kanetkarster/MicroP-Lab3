@@ -5,6 +5,8 @@
 		
 #define IO_SEVEN_SEGMENT GPIOB
 
+unsigned int wait = 0;
+
 /*!
 	Which pin (on IO_SEVEN_SEGMENT) is used for each digit.
  */
@@ -142,6 +144,7 @@ void TIM3_IRQHandler() {
 	GPIO_ResetBits(IO_SEVEN_SEGMENT, ALL_SEGS | SEGMENT_DEC);
 	GPIO_SetBits(IO_SEVEN_SEGMENT, num[index_tmp]);
 	
+	wait++;
 }
 
 /*!

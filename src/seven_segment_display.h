@@ -18,4 +18,5 @@ int seven_segment_setup(void);
  */
 int display(float to_display);
 
+extern unsigned int wait;
 #endif // __INCLUDE_SEVEN_SEGMENT_H__

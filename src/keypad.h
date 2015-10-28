@@ -1,7 +1,7 @@
 // keypad.h - getting user input from keypad
 
-#ifndef __INCLUDE_ACELEROMTER_H__
-#define __INCLUDE_ACELEROMTER_H__
+#ifndef __INCLUDE_KEYPAD_H__
+#define __INCLUDE_KEYPAD_H__
 
 /*!
 	Makes system calls for setting up GPIO for keypad
@@ -17,4 +17,4 @@ int keypad_setup(void);
  */
 int get_input(int* guess);
 
-#endif // __INCLUDE_ACELEROMTER_H__
+#endif // __INCLUDE_KEYPAD_H__

@@ -15,9 +15,11 @@ int main(){
 	
 	led_display(GUESS_TOO_HIGH);
 	display(32.8);
-	
+	float f;
 	while(1){
-		
+		while (wait % 10 != 0);
+		get_angle(&f);
+		display(f);
 	}
 	
 	return 0;

@@ -97,7 +97,7 @@ void EXTI0_IRQHandler(void)
 	@param *angle the angle measured by the accelerometer
 	@return 0 on success, else negative
  */
-int get_angle(int* angle) {
-	*angle = (int) get_value(&angle_avg);
+int get_angle(float* angle) {
+	*angle = get_value(&angle_avg);
 	return 0;
 }
