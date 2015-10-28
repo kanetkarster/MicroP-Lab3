@@ -19,7 +19,7 @@ int led_setup() {
 	gpio_init_s.GPIO_OType = GPIO_OType_PP;			// Operating output type (push-pull) for selected pins
 	gpio_init_s.GPIO_PuPd = GPIO_PuPd_NOPULL; 	// If there is no input, don't pull.
 
-	gpio_init_s.GPIO_Pin = GUESS_TOO_LOW | GUESS_TOO_LOW | 
+	gpio_init_s.GPIO_Pin = GUESS_TOO_LOW | GUESS_TOO_HIGH | 
 												 GUESS_WIN | GUESS_LOSS; // select the 4 GPIO Pins for LEDs
 	GPIO_Init(GPIO_LED, &gpio_init_s); 						// Initializes the  LEDs
 	

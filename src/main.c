@@ -4,16 +4,20 @@
 
 #include "led_display.h"
 #include "seven_segment_display.h"
+#include "accelerometer.h"
+
 
 int main(){
 	SystemInit();
 	led_setup();
 	seven_segment_setup();
-	led_display(GUESS_TOO_LOW);
-	display(6.23);
+	accelerometer_setup(ACCELEROMETER_LIS3DSH);
+	
+	led_display(GUESS_TOO_HIGH);
+	display(32.8);
 	
 	while(1){
-	
+		
 	}
 	
 	return 0;
