@@ -3,8 +3,10 @@
 #include "stm32f4xx_conf.h"
 #include "lis3dsh.h"
 #include <stdio.h>
-
+#include <math.h>
 #include "moving_average.h"
+
+FilterBuffer angle_avg;
 
 /*!
 	Makes system calls for setting up accelerometer
@@ -78,9 +80,13 @@ void EXTI0_IRQHandler(void)
 	float xyz[3];
 	if (EXTI_GetITStatus(LIS3DSH_SPI_INT1_EXTI_LINE) != RESET){
 		LIS3DSH_ReadACC(xyz);
-		float angle = (xyz[2] - 26) / (Z_POS_ZVG - Z_NEG_ZVG) * 180 + 90;
-		add_value(angle);
-		printf("%f\n", get_value());
+		//printf("x: %f\ty: %f\tz: %f\n", xyz[0], xyz[1], xyz[2]);
+		float x = xyz[0], y = xyz[1] - 13.5, z = xyz[2] - 26;
+		float angle = atan2f(x, sqrtf(y*y + z*z));
+		//printf("%f\n", angle);
+		//float angle = (xyz[2] - 26) / (Z_POS_ZVG - Z_NEG_ZVG) * 180 + 90;
+		add_value(&angle_avg, angle * 180.0f / 3.14f + 90);
+		printf("%f\n", get_value(&angle_avg));
 		EXTI_ClearITPendingBit(LIS3DSH_SPI_INT1_EXTI_LINE);
 	}
 }
