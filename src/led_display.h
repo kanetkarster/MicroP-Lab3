@@ -6,10 +6,10 @@
 	Each index coresponds to a particular LED
  */
 typedef enum {
-	GUESS_TOO_LOW = GPIO_Pin_12,
-	GUESS_TOO_HIGH = GPIO_Pin_13,
-	GUESS_WIN = GPIO_Pin_14,
-	GUESS_LOSS = GPIO_Pin_15,
+	GUESS_TOO_LOW = GPIO_Pin_13,	// orange
+	GUESS_TOO_HIGH = GPIO_Pin_15,	// blue
+	GUESS_WIN = GPIO_Pin_12,			// green
+	GUESS_LOSS = GPIO_Pin_14,			// red
 	GUESS_ALL = GUESS_TOO_LOW | GUESS_TOO_HIGH | GUESS_WIN | GUESS_LOSS
 } GUESS_STATUS;
 
@@ -18,7 +18,7 @@ typedef enum {
 	
 	@return 0 on success, else negative
  */
-int led_setup();
+int led_setup(void);
 
 /*!
 	Shows LED related to status of user input
