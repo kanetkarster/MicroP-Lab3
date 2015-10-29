@@ -91,7 +91,7 @@ void EXTI0_IRQHandler(void)
 		//float roll = atan2f(y, sqrtf(x*x + z*z)) * 180.0f / 3.14f;
 		add_value(&angle_avg, pitch);
 
-		printf("%f\n", get_value(&angle_avg));
+		//printf("%f\n",get_value(&angle_avg));
 		EXTI_ClearITPendingBit(LIS3DSH_SPI_INT1_EXTI_LINE);
 	}
 }

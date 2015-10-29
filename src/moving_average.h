@@ -2,7 +2,7 @@
 #ifndef __INCLUDE_MOVING_AVERAGE_H_
 #define __INCLUDE_MOVING_AVERAGE_H_
 
-#define BUFF_SIZE 20
+#define BUFF_SIZE 10
 
 typedef struct {
 	float buffer[BUFF_SIZE];

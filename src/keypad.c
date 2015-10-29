@@ -6,7 +6,7 @@
 #include "seven_segment_display.h"
 
 #define	ENTER '#'
-#define debounce_time 48 //1000*5ns = 5ms ~~
+#define debounce_time 50 //1000*5ns = 5ms ~~
 const char BUTTON_MAP[12] = "147*2580369#";
 int keypadready = 0;
 int guess = 0;
@@ -39,7 +39,7 @@ int keypad_NVIC_config(){
 	
 		nvic_init_s.NVIC_IRQChannel = EXTI9_5_IRQn;
 		nvic_init_s.NVIC_IRQChannelPreemptionPriority = 0x00;
-		nvic_init_s.NVIC_IRQChannelSubPriority = 0x0F;
+		nvic_init_s.NVIC_IRQChannelSubPriority = 0x00;
 		nvic_init_s.NVIC_IRQChannelCmd = ENABLE;
 	
 		NVIC_Init(&nvic_init_s);
@@ -159,7 +159,7 @@ void EXTI9_5_IRQHandler(void){
 	int row_select;
 	
 	static unsigned int check = 0;
-	
+	//static char last = '\0';
 	if (wait < (check + debounce_time)) {
 		return;
 	}
@@ -199,6 +199,12 @@ void EXTI9_5_IRQHandler(void){
 		return;
 	
 	unsigned int selection = col_select + row_select;
+	
+//	if (wait < (check + debounce_time) && last == BUTTON_MAP[selection]) {
+//		return;
+//	}
+//	check = wait;
+//	last = BUTTON_MAP[selection];
 	
 	if (BUTTON_MAP[selection] == '*') {
 		guess = 0;

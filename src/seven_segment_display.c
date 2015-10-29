@@ -123,7 +123,7 @@ int seven_segment_setup() {
 	NVIC_InitTypeDef  nvic_init_s;
 	nvic_init_s.NVIC_IRQChannel = TIM3_IRQn;
 	nvic_init_s.NVIC_IRQChannelCmd = ENABLE;
-	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 0x01;
+	nvic_init_s.NVIC_IRQChannelPreemptionPriority = 0x00;
 	nvic_init_s.NVIC_IRQChannelSubPriority = 0x01;
 	
 	NVIC_Init(&nvic_init_s);
@@ -210,7 +210,7 @@ int display_guess(int guess) {
 	if (guess < 0 || guess > 180) {
 		return -1;
 	}
-	// set LSB
+	// set LSD
 	for (int i = 2; i >=0; i--) {
 		num[i] |= toSegments[guess % 10];
 		guess = guess / 10;
