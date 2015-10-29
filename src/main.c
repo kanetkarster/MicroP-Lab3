@@ -19,8 +19,8 @@ int main(){
 	// give the accelerometer time to setup
 	while (wait < 100);
 	display_guess(169);
-	while(1);
-	//game_loop();
+	//while(1);
+	game_loop();
 	
 	return 0;
 }
@@ -31,7 +31,7 @@ void game_loop() {
 	float anglef;
 	int anglei;
 	GUESS_STATUS stat;
-	//while(!keypadready); // busy wait for keypad value
+
 	get_angle(&anglef);
 	anglei = (int) anglef;
 	printf("angle = %f\n", anglef);
@@ -39,7 +39,7 @@ void game_loop() {
 		//printf("enter a value!\n");
 		//scanf("%d", &guess);
 		guess = guesses[i];
-		display(anglef);
+		//while(!keypadready); // busy wait for keypad value
 		int err = anglef - guess;
 		printf("err: %d\n", err);
 		if ((-GUESS_ERROR < err) && (err < GUESS_ERROR)) {
@@ -54,4 +54,5 @@ void game_loop() {
 		}
 		led_display(stat);
 	}
+	display(anglef);
 }
