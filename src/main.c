@@ -20,7 +20,7 @@ int main(){
 	// give the accelerometer time to setup
 	while (wait < 100);
 	display_guess(169);
-	
+	while(!keypadready);
 	game_loop();
 	while(1);
 	return 0;

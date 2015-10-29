@@ -218,5 +218,5 @@ int display_guess(int guess) {
 			return 0;
 		}
 	}
-	
+	return -1;
 }
