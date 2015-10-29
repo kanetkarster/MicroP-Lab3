@@ -18,8 +18,9 @@ int main(){
 	
 	// give the accelerometer time to setup
 	while (wait < 100);
-	
-	game_loop();
+	display_guess(169);
+	while(1);
+	//game_loop();
 	
 	return 0;
 }
