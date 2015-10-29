@@ -20,4 +20,15 @@ int seven_segment_setup(void);
  */
 int display(float to_display);
 
+/*!
+	display a guess on the seven segment display. 
+	This only displays as many digits as are input
+
+	@param guess integer to display on seven segment display
+	@return 0 on success, else -1
+ */
+
+int display_guess(int guess);
+
+extern unsigned int wait;
 #endif // __INCLUDE_SEVEN_SEGMENT_H__

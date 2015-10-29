@@ -5,7 +5,6 @@
 		
 #define IO_SEVEN_SEGMENT GPIOB
 
-
 unsigned int wait = 0;
 
 /*!
@@ -144,6 +143,7 @@ void TIM3_IRQHandler() {
 	// Display a Number
 	GPIO_ResetBits(IO_SEVEN_SEGMENT, ALL_SEGS | SEGMENT_DEC);
 	GPIO_SetBits(IO_SEVEN_SEGMENT, num[index_tmp]);
+
 	wait++;
 }
 
@@ -192,3 +192,31 @@ int display(float to_display) {
 	return 0;
 }
 
+/*!
+	display a guess on the seven segment display. 
+	This only displays as many digits as are input
+
+	@param guess integer to display on seven segment display
+	@return 0 on success, else -1
+ */
+
+int display_guess(int guess) {
+		// turn all segments off
+	num[0] = NUM_OFF;
+	num[1] = NUM_OFF;
+	num[2] = NUM_OFF;
+	
+	// error if too small or too large
+	if (guess < 0 || guess > 180) {
+		return -1;
+	}
+	// set LSB
+	for (int i = 2; i >=0; i--) {
+		num[i] |= toSegments[guess % 10];
+		guess = guess / 10;
+		if (guess == 0) {
+			return 0;
+		}
+	}
+	
+}

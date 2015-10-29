@@ -73,19 +73,24 @@ int accelerometer_setup(ACCELEROMETER which) {
 	return 0;
 }
 
-#define Z_POS_ZVG 985
-#define Z_NEG_ZVG -985
+#define OFFSET_X 0
+#define OFFSET_Y -13.5f
+#define OFFSET_Z -26.0f
 void EXTI0_IRQHandler(void)
 {
 	float xyz[3];
 	if (EXTI_GetITStatus(LIS3DSH_SPI_INT1_EXTI_LINE) != RESET){
 		LIS3DSH_ReadACC(xyz);
-		//printf("x: %f\ty: %f\tz: %f\n", xyz[0], xyz[1], xyz[2]);
-		float x = xyz[0], y = xyz[1] - 13.5f, z = xyz[2] - 26.0f;
-		float angle = atan2f(x, sqrtf(y*y + z*z));
-		//printf("%f\n", angle);
-		//float angle = (xyz[2] - 26) / (Z_POS_ZVG - Z_NEG_ZVG) * 180 + 90;
-		add_value(&angle_avg, angle * 180.0f / 3.14f + 90);
+		
+		// get offset values
+		float x = xyz[0] + OFFSET_X;
+		float y = xyz[1] + OFFSET_Y;
+		float z = xyz[2] + OFFSET_Z;
+		
+		float pitch = atan2f(x, sqrtf(y*y + z*z)) * 180.0f / 3.14f + 89;
+		//float roll = atan2f(y, sqrtf(x*x + z*z)) * 180.0f / 3.14f;
+		add_value(&angle_avg, pitch);
+
 		//printf("%f\n", get_value(&angle_avg));
 		EXTI_ClearITPendingBit(LIS3DSH_SPI_INT1_EXTI_LINE);
 	}

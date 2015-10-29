@@ -452,6 +452,26 @@
               <FileType>1</FileType>
               <FilePath>.\src\seven_segment_display.c</FilePath>
             </File>
+            <File>
+              <FileName>led_display.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\led_display.h</FilePath>
+            </File>
+            <File>
+              <FileName>led_display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\led_display.c</FilePath>
+            </File>
+            <File>
+              <FileName>moving_average.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\moving_average.c</FilePath>
+            </File>
+            <File>
+              <FileName>moving_average.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\moving_average.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
