@@ -7,7 +7,7 @@
 #include "accelerometer.h"
 
 #define NUM_TRIES 3
-#define GUESS_ERROR 5
+#define GUESS_ERROR 4
 void game_loop(void);
 int get_input(void);
 
@@ -16,30 +16,33 @@ int main(){
 	led_setup();
 	seven_segment_setup();
 	
-	led_display(GUESS_TOO_HIGH);
-	//display(32.8);
-	while(1){
-		game_loop();
-	}
+	// give the accelerometer time to setup
+	while (wait < 100);
+	
+	game_loop();
 	
 	return 0;
 }
 
 void game_loop() {
+	int guesses[3] = {45, 120, 90};
 	int guess;
 	float anglef;
 	int anglei;
 	GUESS_STATUS stat;
+	//while(!keypadready); // busy wait for keypad value
+	get_angle(&anglef);
+	anglei = (int) anglef;
+	printf("angle = %f\n", anglef);
 	for (int i = 0; i < NUM_TRIES; i++) {
-		//while(!keypadready); // busy wait for keypad value
-		printf("enter a value!\n");
-		scanf("%d", &guess);
-		get_angle(&anglef);
+		//printf("enter a value!\n");
+		//scanf("%d", &guess);
+		guess = guesses[i];
 		display(anglef);
-		anglei = (int) anglef;
-		int err = guess - GUESS_ERROR;
-		if ((-5 < err) && (err < 5)) {
-			stat = GUESS_WIN;
+		int err = anglef - guess;
+		printf("err: %d\n", err);
+		if ((-GUESS_ERROR < err) && (err < GUESS_ERROR)) {
+			led_display(GUESS_WIN);
 			break;
 		}
 		else if (guess < anglei) {
@@ -49,8 +52,5 @@ void game_loop() {
 			stat = GUESS_TOO_HIGH;
 		}
 		led_display(stat);
-	}
-	if (stat != GUESS_WIN) {
-		led_display(GUESS_LOSS);
 	}
 }
