@@ -17,9 +17,6 @@ int main(){
 	display(32.8);
 	float f;
 	while(1){
-		while(wait%100 != 0);
-		get_angle(&f);
-		display(f);
 	}
 	
 	return 0;

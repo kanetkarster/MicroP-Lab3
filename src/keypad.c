@@ -2,11 +2,14 @@
 #include "stm32f4xx.h"                  // Device header
 #include "stm32f4xx_conf.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "seven_segment_display.h"
 
-#define debounce_time 25 //1000*5ns = 5ms ~~
+#define	ENTER '#'
+#define debounce_time 48 //1000*5ns = 5ms ~~
 const char BUTTON_MAP[12] = "147*2580369#";
-
+int keypadready = 0;
+int guess = 0;
 int keypad_gpio_reset() {
 	GPIO_InitTypeDef gpio_init_rows;
 	GPIO_InitTypeDef gpio_init_cols;
@@ -28,7 +31,7 @@ int keypad_gpio_reset() {
 	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOC, &gpio_init_rows);
 	
-		return 0;
+	return 0;
 	
 }
 int keypad_NVIC_config(){
@@ -86,7 +89,7 @@ int keypad_EXTI_config(){
 	EXTI_Init(&exti_init_row2);
 	EXTI_Init(&exti_init_row3);
 	
-		return 0;
+	return 0;
 
 }
 int keypad_switch(){
@@ -110,7 +113,7 @@ int keypad_switch(){
 	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_Init(GPIOC, &gpio_init_rows);
 	
-		return 0;
+	return 0;
 }
 /*!
 	Makes system calls for setting up GPIO for keypad
@@ -153,7 +156,7 @@ int keypad_setup() {
 }
 void EXTI9_5_IRQHandler(void){
 	int col_select;
-	int  row_select;
+	int row_select;
 	
 	static unsigned int check = 0;
 	
@@ -195,53 +198,38 @@ void EXTI9_5_IRQHandler(void){
 	else
 		return;
 	
-	
 	unsigned int selection = col_select + row_select;
 	
-	printf("button selected: %c\n", BUTTON_MAP[selection]);
-
+	if (BUTTON_MAP[selection] == '*') {
+		guess = 0;
+	}else if (BUTTON_MAP[selection] == ENTER) {
+		display((float)(guess/10));
+		keypadready = 1;
+		guess = 0;
+	} else {
 	
-	
-	keypad_gpio_reset();
-}
-
-void check_press(void) {
-	int row_select;
-	int col_select;
-	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9) == 0)
-		row_select=3;
-	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) == 0)
-		row_select=2;
-	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6) == 0)
-		row_select=1;
-	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_5) == 0)
-		row_select = 0;
-	else
-		return;
-	
-	keypad_switch();
-	
-	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_1) == 0)
-		col_select = 0;
-	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_2) == 0)
-		col_select = 4;
-	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_4) == 0)
-		col_select = 8;
-	else
-		return;
-	
-	
-	unsigned int selection = col_select + row_select;
-	
+	guess += BUTTON_MAP[selection] - 48;
+	guess *= 10;
+	}
 	printf("button selected: %c\n", BUTTON_MAP[selection]);
 	
 	keypad_gpio_reset();
 }
+
 /*!
 	Get's a guess from user
 	@param *guess what the user guessed
 	@return 0 on success, else negative
  */
-int get_input(int* guess) {
+int get_input(int *temp) {
+	
+	if (guess > 180) {
+		keypadready = 0;
+		return -1;
+	}
+	*temp = guess / 10;
+	guess  = 0;
+	
+	keypadready = 0;
 	return 0;
 }
