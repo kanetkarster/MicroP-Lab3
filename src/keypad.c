@@ -203,14 +203,12 @@ void EXTI9_5_IRQHandler(void){
 	if (BUTTON_MAP[selection] == '*') {
 		guess = 0;
 	}else if (BUTTON_MAP[selection] == ENTER) {
-		display((float)(guess/10));
 		keypadready = 1;
-		guess = 0;
 	} else {
-	
-	guess += BUTTON_MAP[selection] - 48;
-	guess *= 10;
+		guess += BUTTON_MAP[selection] - 48;
+		guess *= 10;
 	}
+	display_guess(guess/10);
 	printf("button selected: %c\n", BUTTON_MAP[selection]);
 	
 	keypad_gpio_reset();
@@ -223,8 +221,9 @@ void EXTI9_5_IRQHandler(void){
  */
 int get_input(int *temp) {
 	
-	if (guess > 180) {
+	if (guess > 1800) {
 		keypadready = 0;
+		guess  = 0;
 		return -1;
 	}
 	*temp = guess / 10;

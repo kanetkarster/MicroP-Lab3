@@ -16,18 +16,19 @@ int main(){
 	keypad_setup();
 	led_setup();
 	seven_segment_setup();
-	
 	// give the accelerometer time to setup
 	while (wait < 100);
-	display_guess(169);
+	display(119);
 	while(!keypadready);
+	keypadready = 0;
+	//get_input(&);
 	game_loop();
 	while(1);
 	return 0;
 }
 
 void game_loop() {
-	int guesses[3] = {45, 120, 90};
+	//int guesses[3] = {45, 120, 90};
 	int guess;
 	float anglef;
 	int anglei;
@@ -37,15 +38,17 @@ void game_loop() {
 	anglei = (int) anglef;
 	printf("angle = %f\n", anglef);
 	for (int i = 0; i < NUM_TRIES; i++) {
-		//printf("enter a value!\n");
-		//scanf("%d", &guess);
-		guess = guesses[i];
-		//while(!keypadready); // busy wait for keypad value
+
+		//guess = guesses[i];
+		while(!keypadready); // busy wait for keypad value
+		get_input(&guess);
+		printf("guess: %d\n", guess);
 		int err = anglef - guess;
 		printf("err: %d\n", err);
 		if ((-GUESS_ERROR < err) && (err < GUESS_ERROR)) {
 			led_display(GUESS_WIN);
-			break;
+			display(anglef);
+			return;
 		}
 		else if (guess < anglei) {
 			stat = GUESS_TOO_LOW;
@@ -55,5 +58,6 @@ void game_loop() {
 		}
 		led_display(stat);
 	}
+	led_display(GUESS_LOSS);
 	display(anglef);
 }
