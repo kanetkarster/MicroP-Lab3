@@ -20,7 +20,7 @@ int keypad_gpio_reset() {
 	gpio_init_cols.GPIO_OType = GPIO_OType_PP;
 	gpio_init_cols.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
 	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_DOWN;
-	gpio_init_cols.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init_cols.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_cols);
 	
 	//set rows pins as input
@@ -28,7 +28,7 @@ int keypad_gpio_reset() {
 	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
 	gpio_init_rows.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
 	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_UP;
-	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init_rows.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_rows);
 	
 	return 0;
@@ -102,7 +102,7 @@ int keypad_switch(){
 	gpio_init_cols.GPIO_OType = GPIO_OType_PP;
 	gpio_init_cols.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
 	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_UP;
-	gpio_init_cols.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init_cols.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_cols);
 	
 	//set rows pins as output
@@ -110,7 +110,7 @@ int keypad_switch(){
 	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
 	gpio_init_rows.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
 	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_DOWN;
-	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init_rows.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_rows);
 	
 	return 0;
@@ -137,7 +137,7 @@ int keypad_setup() {
 	gpio_init_cols.GPIO_OType = GPIO_OType_PP;
 	gpio_init_cols.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_4;
 	gpio_init_cols.GPIO_PuPd = GPIO_PuPd_DOWN;
-	gpio_init_cols.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init_cols.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_cols);
 	
 	//set rows pins as input
@@ -145,7 +145,7 @@ int keypad_setup() {
 	gpio_init_rows.GPIO_OType = GPIO_OType_PP;
 	gpio_init_rows.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9;
 	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_UP;
-	gpio_init_rows.GPIO_Speed = GPIO_Speed_100MHz;
+	gpio_init_rows.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_rows);
 
 	keypad_EXTI_config();

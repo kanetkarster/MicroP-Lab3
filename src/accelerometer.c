@@ -30,8 +30,8 @@ int accelerometer_setup(ACCELEROMETER which) {
 		// setup interupts
 		LIS3DSH_DRYInterruptConfigTypeDef lis3dsh_dry_interrupt_s;
 		lis3dsh_dry_interrupt_s.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;
-		lis3dsh_dry_interrupt_s.Interrupt_signal = LIS3DSH_ACTIVE_LOW_INTERRUPT_SIGNAL;
-		lis3dsh_dry_interrupt_s.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_LATCHED;
+		lis3dsh_dry_interrupt_s.Interrupt_signal = LIS3DSH_ACTIVE_HIGH_INTERRUPT_SIGNAL;
+		lis3dsh_dry_interrupt_s.Interrupt_type = LIS3DSH_INTERRUPT_REQUEST_PULSED;
 		
 		LIS3DSH_DataReadyInterruptConfig(&lis3dsh_dry_interrupt_s);
 		
@@ -91,7 +91,7 @@ void EXTI0_IRQHandler(void)
 		//float roll = atan2f(y, sqrtf(x*x + z*z)) * 180.0f / 3.14f;
 		add_value(&angle_avg, pitch);
 
-		//printf("%f\n", get_value(&angle_avg));
+		printf("%f\n", get_value(&angle_avg));
 		EXTI_ClearITPendingBit(LIS3DSH_SPI_INT1_EXTI_LINE);
 	}
 }
