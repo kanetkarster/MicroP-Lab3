@@ -36,12 +36,12 @@ int keypad_gpio_reset() {
 }
 int keypad_NVIC_config(){
 		NVIC_InitTypeDef nvic_init_s;
-	
+		//NVIC configurations 
 		nvic_init_s.NVIC_IRQChannel = EXTI9_5_IRQn;
 		nvic_init_s.NVIC_IRQChannelPreemptionPriority = 0x00;
 		nvic_init_s.NVIC_IRQChannelSubPriority = 0x00;
 		nvic_init_s.NVIC_IRQChannelCmd = ENABLE;
-	
+		//initialize NVIC struct
 		NVIC_Init(&nvic_init_s);
 	
 		return 0;
@@ -147,7 +147,7 @@ int keypad_setup() {
 	gpio_init_rows.GPIO_PuPd = GPIO_PuPd_UP;
 	gpio_init_rows.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOC, &gpio_init_rows);
-
+	//call EXTI and NVIC configs
 	keypad_EXTI_config();
 	keypad_NVIC_config();
 	
@@ -158,13 +158,13 @@ void EXTI9_5_IRQHandler(void){
 	int col_select;
 	int row_select;
 	
+	//Debouncing logic
 	static unsigned int check = 0;
-	//static char last = '\0';
 	if (wait < (check + debounce_time)) {
 		return;
 	}
 	check = wait;
-	
+	//check to see if interrupt actually occurred
 	if(EXTI_GetITStatus(EXTI_Line9) != RESET) {
 		EXTI_ClearITPendingBit(EXTI_Line9);
 	}else if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
@@ -175,7 +175,7 @@ void EXTI9_5_IRQHandler(void){
 		EXTI_ClearITPendingBit(EXTI_Line5);
 	}else
 		return;
-	
+	//get row that was pressed
 	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_9) == 0)
 		row_select=3;
 	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_8) == 0)
@@ -186,9 +186,9 @@ void EXTI9_5_IRQHandler(void){
 		row_select = 0;
 	else
 		return;
-	
+	//switch GPIO Settings for reading cols
 	keypad_switch();
-	
+	//read column that was pressed
 	if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_1) == 0)
 		col_select = 0;
 	else if(GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_2) == 0)
@@ -197,26 +197,22 @@ void EXTI9_5_IRQHandler(void){
 		col_select = 8;
 	else
 		return;
-	
+	//get value of press
 	unsigned int selection = col_select + row_select;
-	
-//	if (wait < (check + debounce_time) && last == BUTTON_MAP[selection]) {
-//		return;
-//	}
-//	check = wait;
-//	last = BUTTON_MAP[selection];
-	
+	//check to see if press is reset
 	if (BUTTON_MAP[selection] == '*') {
 		guess = 0;
+	//check to see if press is Enter
 	}else if (BUTTON_MAP[selection] == ENTER) {
 		keypadready = 1;
+	//get press and update guess
 	} else {
 		guess += BUTTON_MAP[selection] - 48;
 		guess *= 10;
 	}
+	//display the guess
 	display_guess(guess/10);
-	printf("button selected: %c\n", BUTTON_MAP[selection]);
-	
+	//reset GPIO pins to default
 	keypad_gpio_reset();
 }
 
